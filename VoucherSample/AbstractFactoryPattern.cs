@@ -9,8 +9,8 @@ namespace VoucherSample
 
     abstract class RedemptionFactory
     {
-        public abstract SetVoucher CreateVoucher();
-        public abstract DeductVoucher DeleteVoucher();
+        public abstract VoucherItem VoucherItem();
+        public abstract DeductVoucher DeductVoucher();
     }
 
     /// <summary>
@@ -19,11 +19,11 @@ namespace VoucherSample
 
     class SingleRedemptionFactory : RedemptionFactory
     {
-        public override SetVoucher CreateVoucher()
+        public override VoucherItem VoucherItem()
         {
             return new SingleVoucherCreation();
         }
-        public override DeductVoucher DeleteVoucher()
+        public override DeductVoucher DeductVoucher()
         {
             return new SingleVoucherDeduction();
         }
@@ -35,22 +35,22 @@ namespace VoucherSample
 
     class MultiRedemptionFactory : RedemptionFactory
     {
-        public override SetVoucher CreateVoucher()
+        public override VoucherItem VoucherItem()
         {
             return new MultiRedemptionCreation();
         }
-        public override DeductVoucher DeleteVoucher()
+        public override DeductVoucher DeductVoucher()
         {
             return new MultiRedemptionDeduction();
         }
     }
     class XRedemptionFactory : RedemptionFactory
     {
-        public override SetVoucher CreateVoucher()
+        public override VoucherItem VoucherItem()
         {
             return new XRedemptionCreation();
         }
-        public override DeductVoucher DeleteVoucher()
+        public override DeductVoucher DeductVoucher()
         {
             return new XRedemptionDeduction();
         }
@@ -59,7 +59,7 @@ namespace VoucherSample
     /// The 'AbstractProductA' abstract class
     /// </summary>
 
-    abstract class SetVoucher
+    abstract class VoucherItem
     {
     }
 
@@ -69,14 +69,14 @@ namespace VoucherSample
 
     abstract class DeductVoucher
     {
-        public abstract string ActionToUse(SetVoucher h);
+        public abstract string ActionToUse(VoucherItem h);
     }
 
     /// <summary>
     /// The 'ProductA1' class
     /// </summary>
 
-    class SingleVoucherCreation : SetVoucher
+    class SingleVoucherCreation : VoucherItem
     {
     }
 
@@ -86,21 +86,23 @@ namespace VoucherSample
 
     class SingleVoucherDeduction : DeductVoucher
     {
-        public override string ActionToUse(SetVoucher h)
+        public override string ActionToUse(VoucherItem h)
         {
 
             return "Deduct voucher for a single voucher";
         }
     }
 
+    
+
     /// <summary>
     /// The 'ProductA2' class
     /// </summary>
 
-    class MultiRedemptionCreation : SetVoucher
+    class MultiRedemptionCreation : VoucherItem
     {
     }
-    class XRedemptionCreation : SetVoucher
+    class XRedemptionCreation : VoucherItem
     {
     }
 
@@ -110,14 +112,14 @@ namespace VoucherSample
 
     class MultiRedemptionDeduction : DeductVoucher
     {
-        public override string ActionToUse(SetVoucher h)
+        public override string ActionToUse(VoucherItem h)
         {
             return "Deduct voucher for a multi voucher";
         }
     }
     class XRedemptionDeduction : DeductVoucher
     {
-        public override string ActionToUse(SetVoucher h)
+        public override string ActionToUse(VoucherItem h)
         {
             return "Deduct voucher for a X voucher";
         }
@@ -129,20 +131,20 @@ namespace VoucherSample
 
     class Voucher
     {
-        private SetVoucher _setVoucher;
+        private VoucherItem _voucher;
         private DeductVoucher _deductVoucher;
 
         // Constructor
 
         public Voucher(RedemptionFactory factory)
         {
-            _deductVoucher = factory.DeleteVoucher();
-            _setVoucher = factory.CreateVoucher();
+            _deductVoucher = factory.DeductVoucher();
+            _voucher = factory.VoucherItem();
         }
 
-        public string Process()
+        public string ProcessDeduction()
         {
-            return _deductVoucher.ActionToUse(_setVoucher);
+            return _deductVoucher.ActionToUse(_voucher);
         }
     }
 }

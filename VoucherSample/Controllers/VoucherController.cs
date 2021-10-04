@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace VoucherSample.Controllers
 {
@@ -22,7 +23,7 @@ namespace VoucherSample.Controllers
         [HttpGet]
         public string GetVoucher(string val)
         {
-            RedemptionFactory standard;
+            RedemptionFactory redemption;
             if (val == null)
             {
                 val = "1";
@@ -33,39 +34,39 @@ namespace VoucherSample.Controllers
             {
                 case "1":
                     dat = DateTime.UtcNow.AddDays(4);
-                    standard = new SingleRedemptionFactory();
+                    redemption = new SingleRedemptionFactory();
                     break;
                 case "2":
                     dat = DateTime.UtcNow.AddDays(8);
-                    standard = new SingleRedemptionFactory();
+                    redemption = new SingleRedemptionFactory();
                     break;
                 case "3":
                     dat = DateTime.UtcNow.AddDays(24);
-                    standard = new SingleRedemptionFactory();
+                    redemption = new SingleRedemptionFactory();
                     break;
                 case "4":
                     dat = DateTime.UtcNow.AddDays(6);
-                    standard = new MultiRedemptionFactory();
+                    redemption = new MultiRedemptionFactory();
                     break;
                 case "5":
                     dat = DateTime.UtcNow.AddDays(-34);
-                    standard = new MultiRedemptionFactory();
+                    redemption = new MultiRedemptionFactory();
                     break;
                 case "6":
                     dat = DateTime.UtcNow.AddDays(5);
-                    standard = new MultiRedemptionFactory();
+                    redemption = new MultiRedemptionFactory();
                     break;
                 case "7":
                     dat = DateTime.UtcNow.AddDays(14);
-                    standard = new XRedemptionFactory();
+                    redemption = new XRedemptionFactory();
                     break;
                 case "8":
                     dat = DateTime.UtcNow.AddDays(-4);
-                    standard = new XRedemptionFactory();
+                    redemption = new XRedemptionFactory();
                     break;
                 case "9":
                     dat = DateTime.UtcNow.AddDays(44);
-                    standard = new XRedemptionFactory();
+                    redemption = new XRedemptionFactory();
                     break;
                 default:
                     return "not found";
@@ -73,18 +74,17 @@ namespace VoucherSample.Controllers
             if (dat < DateTime.Now)
             {
                 return "Vocher expired";
-            }
-
-
-            Voucher world = new Voucher(standard);
-
-            return world.Process();
+            } 
+            Voucher voucher = new Voucher(redemption); 
+            return voucher.ProcessDeduction();
         }
 
         [HttpPost]
-        public string CreateVoucher()
+        public IActionResult CreateVoucher(VoucherObject voucherRequest )
         {
-            return "CreateVoucher";
+            voucherRequest.ValidDateFrom = DateTime.Now.AddDays(3);
+            voucherRequest.Approved = true;
+            return Ok(voucherRequest); 
         }
     }
 }
